@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "../services/api";
@@ -105,7 +106,26 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      const stock = await api.get<Stock>(`/stock/${productId}`).then(response => response.data)
+
+      console.log(stock)
+  
+      if(amount < 0) {
+        return;
+      }
+
+      if(amount < stock.amount){
+        return;
+      }
+
+      const productInCart = [...cart]
+       const productExists = productInCart.find(product => product.id === product.id)
+
+       if(productExists){
+         productExists.amount = amount
+         setCart(productInCart)
+       }
+      
     } catch {
       // TODO
     }
